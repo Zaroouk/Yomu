@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+
+members = [
+    "crates/engine",
+    "crates/slack-bot",
+    "crates/cli",]
+
+[workspace.dependencies]
+time = "=0.3.53"
