@@ -139,7 +139,16 @@ impl SlackService {
         Ok(())
     }
 
-    pub async fn handle_thread_test(&self, channel_id: &str) -> anyhow::Result<()> {
+    pub async fn post_message(
+     &self,
+    channel: &str,
+    text: &str,
+    thread_ts: Option<&str>,
+) -> anyhow::Result<String> {
+    let payload = serde_json::json!({ "text": text });
+    self.slack_client.post_message(channel, thread_ts, payload).await
+}
+pub async fn handle_thread_test(&self, channel_id: &str) -> anyhow::Result<()> {
     let thread_ts = self
         .slack_client
         .post_message(channel_id, None, json!({ "text": "Starting test job..." }))
@@ -159,5 +168,4 @@ impl SlackService {
 
     Ok(())
 }
-
 }
