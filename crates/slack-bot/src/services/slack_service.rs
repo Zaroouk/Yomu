@@ -123,7 +123,7 @@ impl SlackService {
 
         for payload in views::chapter_images_view(&chapter.title, &chapter.pages) {
             self.slack_client.respond(response_url, payload).await?;
-            self.slack_client.respond_in_thread(response_url, payload).await?
+            self.slack_client.respond_in_thread(response_url, payload).await?;
         }
         //for payload in views::thread_item_view(&chapter.title,&chapter.pages)
 
