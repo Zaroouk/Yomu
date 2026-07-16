@@ -131,9 +131,7 @@ impl SlackService {
     }
 
     pub async fn post_message(
-        &self,
-        channel: &str,
-    )&self,
+     &self,
     channel: &str,
     text: &str,
     thread_ts: Option<&str>,
