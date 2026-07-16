@@ -48,8 +48,8 @@ impl SlackClient {
             .error_for_status()?;
 
             println!("[LOGGER]");
-          let body_json: Value = res.json().await?;
-          println!("{:#?}", body_json);
+          let body_text = res.text().await?;
+            println!("{}", body_text);
         
         Ok(())
     }
