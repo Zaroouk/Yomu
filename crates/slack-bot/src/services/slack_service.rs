@@ -137,6 +137,6 @@ impl SlackService {
     thread_ts: Option<&str>,
 ) -> anyhow::Result<String> {
     let payload = serde_json::json!({ "text": text });
-    self.client.post_message(channel, thread_ts, payload).await
+    self.slack_client.post_message(channel, thread_ts, payload).await
 }
 }
