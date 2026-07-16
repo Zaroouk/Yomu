@@ -3,6 +3,7 @@ use std::sync::Arc;
 use crate::services::search_provider::SearchProvider;
 use crate::services::slack_client::SlackClient;
 use crate::services::views;
+use serde_json::json;
 
 #[derive(Clone)]
 pub struct SlackService {
