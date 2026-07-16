@@ -12,4 +12,8 @@ pub fn router() -> Router<AppState> {
             "/commands",
             post(slack_handler::slash_command),
         )
+        .route(
+            "/test",
+            post(slack_handler::test_thread)
+        )
 }
