@@ -39,22 +39,17 @@ pub async fn test_thread(
     State(state): State<AppState>,
 ) -> impl IntoResponse {
     let slack_service = state.slack_service.clone();
-
     tokio::spawn(async move {
         // hardcode a channel you have access to for testing
         let channel = "C0123456789";
-
         let first = slack_service
             .post_message(channel, "Starting test job...", None)
             .await;
-
-        if let Ok(res) = first {
-            let thread_ts = res.ts.clone();
-            slack_service.post_message(channel, "Step 1 done ✅", thread_ts.as_deref()).await.ok();
-            slack_service.post_message(channel, "Step 2 done ✅", thread_ts.as_deref()).await.ok();
-            slack_service.post_message(channel, "Done!", thread_ts.as_deref()).await.ok();
+        if let Ok(thread_ts) = first {
+            slack_service.post_message(channel, "Step 1 done ✅", Some(&thread_ts)).await.ok();
+            slack_service.post_message(channel, "Step 2 done ✅", Some(&thread_ts)).await.ok();
+            slack_service.post_message(channel, "Done!", Some(&thread_ts)).await.ok();
         }
     });
-
     Json(json!({ "status": "test kicked off" }))
 }
