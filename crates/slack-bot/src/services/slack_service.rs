@@ -29,41 +29,33 @@ impl SlackService {
     /// delivers the result to Slack itself (each verb picks its own
     /// view + transport). Errors are logged, not returned, since by the
     /// time this runs the slash command has already been ack'd.
-    pub async fn handle_command(&self, ctx: CommandContext<'_>) {
-        let mut parts = ctx.text.trim().splitn(2, char::is_whitespace);
-        let verb = parts.next().unwrap_or("");
-        let rest = parts.next().unwrap_or("").trim();
+  pub async fn handle_command(&self, ctx: CommandContext<'_>) {
+    let mut parts = ctx.text.trim().splitn(2, char::is_whitespace);
+    let verb = parts.next().unwrap_or("");
+    let rest = parts.next().unwrap_or("").trim();
+    tracing::info!(user_id = ctx.user_id, verb, rest, "handling slash command");
 
-        tracing::info!(user_id = ctx.user_id, verb, rest, "handling slash command");
-
-        let result = match verb {
-            "search" if !rest.is_empty() => self.handle_search(ctx.response_url, rest).await,
-            "chapters" if !rest.is_empty() => {
-                self.handle_chapters(ctx.channel_id, ctx.response_url, rest)
-                    .await
-            }
-            "chapter" if !rest.is_empty() => self.handle_chapter(ctx.response_url, rest).await,
-            _ => {
-                let payload = views::list_view(
-                    "Usage: `/manhwa search <title>` | `/manhwa chapters <manhwa_url>` | `/manhwa chapter <chapter_url>`",
-                    &[],
-                );
-                self.slack_client.respond(ctx.response_url, payload).await
-            }
-            "test" => self.handle_thread_test(ctx.channel_id).await,
-    _ => {
-        let payload = views::list_view(
-            "Usage: `/manhwa search <title>` | `/manhwa chapters <manhwa_url>` | `/manhwa chapter <chapter_url>` | `/manhwa test`",
-            &[],
-        );
-        self.slack_client.respond(ctx.response_url, payload).await
-    }
-        };
-
-        if let Err(err) = result {
-            tracing::error!("failed to deliver slack response: {err:#}");
+    let result = match verb {
+        "search" if !rest.is_empty() => self.handle_search(ctx.response_url, rest).await,
+        "chapters" if !rest.is_empty() => {
+            self.handle_chapters(ctx.channel_id, ctx.response_url, rest)
+                .await
         }
+        "chapter" if !rest.is_empty() => self.handle_chapter(ctx.response_url, rest).await,
+        "test" => self.handle_thread_test(ctx.channel_id).await,
+        _ => {
+            let payload = views::list_view(
+                "Usage: `/manhwa search <title>` | `/manhwa chapters <manhwa_url>` | `/manhwa chapter <chapter_url>` | `/manhwa test`",
+                &[],
+            );
+            self.slack_client.respond(ctx.response_url, payload).await
+        }
+    };
+
+    if let Err(err) = result {
+        tracing::error!("failed to deliver slack response: {err:#}");
     }
+}
 
     /// Favorites/search results: a flat list, replied to the invoking
     /// command via response_url.
