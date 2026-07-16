@@ -50,6 +50,14 @@ impl SlackService {
                 );
                 self.slack_client.respond(ctx.response_url, payload).await
             }
+            "test" => self.handle_thread_test(ctx.channel_id).await,
+    _ => {
+        let payload = views::list_view(
+            "Usage: `/manhwa search <title>` | `/manhwa chapters <manhwa_url>` | `/manhwa chapter <chapter_url>` | `/manhwa test`",
+            &[],
+        );
+        self.slack_client.respond(ctx.response_url, payload).await
+    }
         };
 
         if let Err(err) = result {
@@ -122,8 +130,9 @@ impl SlackService {
         let chapter = self.search_provider.chapter(chapter_url).await?;
 
         for payload in views::chapter_images_view(&chapter.title, &chapter.pages) {
-            //self.slack_client.respond(response_url, payload).await?;
-            self.slack_client.respond_in_thread(response_url, payload).await?;
+            self.slack_client.respond(response_url, payload).await?;
+            //self.slack_client.respond_in_thread(response_url, payload).await?;
+            
         }
         //for payload in views::thread_item_view(&chapter.title,&chapter.pages)
 
@@ -138,5 +147,25 @@ impl SlackService {
 ) -> anyhow::Result<String> {
     let payload = serde_json::json!({ "text": text });
     self.slack_client.post_message(channel, thread_ts, payload).await
+}
+pub async fn handle_thread_test(&self, channel_id: &str) -> anyhow::Result<()> {
+    let thread_ts = self
+        .slack_client
+        .post_message(channel_id, "Starting test job...", None)
+        .await?;
+
+    self.slack_client
+        .post_message(channel_id, "Step 1 done ✅", Some(&thread_ts))
+        .await?;
+
+    self.slack_client
+        .post_message(channel_id, "Step 2 done ✅", Some(&thread_ts))
+        .await?;
+
+    self.slack_client
+        .post_message(channel_id, "Done!", Some(&thread_ts))
+        .await?;
+
+    Ok(())
 }
 }
