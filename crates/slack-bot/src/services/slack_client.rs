@@ -39,6 +39,19 @@ impl SlackClient {
         Ok(())
     }
 
+    pub async fn respond_in_thread(&self, response_url: &str, payload: Value) -> anyhow::Result<()> {
+        let res = self.http
+            .post(response_url)
+            .json(&payload)
+            .send()
+            .await?
+            .error_for_status()?;
+
+            res;
+        print!("res")
+        Ok(())
+    }
+
     /// Post into a channel via the bot token (requires `chat:write` +
     /// `SLACK_BOT_TOKEN`). Pass `thread_ts` to reply inside a thread.
     /// Returns the posted message's `ts`, which you can pass back in as
