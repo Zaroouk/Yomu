@@ -48,7 +48,8 @@ impl SlackClient {
             .error_for_status()?;
 
             res;
-        print!("res")
+        println!("res");
+        println!("res");
         Ok(())
     }
 
