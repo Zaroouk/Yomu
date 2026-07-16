@@ -40,16 +40,18 @@ impl SlackClient {
     }
 
     pub async fn respond_in_thread(&self, response_url: &str, payload: Value) -> anyhow::Result<()> {
-        let res = self.http
-            .post(response_url)
-            .json(&payload)
-            .send()
-            .await?
-            .error_for_status()?;
+         let res = self.http
+        .post(response_url)
+        .json(&payload)
+        .send()
+        .await?;
 
-            println!("[LOGGER]");
-          let body_text = res.text().await?;
-            println!("{}", body_text);
+    println!("status: {}", res.status());
+    println!("headers: {:#?}", res.headers());
+
+    let res = res.error_for_status()?;
+    let body_text = res.text().await?;
+    println!("body: {}", body_text);
         
         Ok(())
     }
