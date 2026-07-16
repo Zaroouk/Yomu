@@ -129,4 +129,16 @@ impl SlackService {
 
         Ok(())
     }
+
+    pub async fn post_message(
+        &self,
+        channel: &str,
+    )&self,
+    channel: &str,
+    text: &str,
+    thread_ts: Option<&str>,
+) -> anyhow::Result<String> {
+    let payload = serde_json::json!({ "text": text });
+    self.client.post_message(channel, thread_ts, payload).await
+}
 }
