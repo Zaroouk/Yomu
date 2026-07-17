@@ -43,7 +43,7 @@ impl SlackService {
                     .await
             }
             // "chapter" if !rest.is_empty() => self.handle_chapter(ctx.response_url, rest).await,
-            "chapter" if !rest.is_empty() => self.handle_thread_test(ctx.response_url, rest).await,
+            "chapter" if !rest.is_empty() => self.handle_thread_test(ctx.channel_id, rest).await,
             "test" => {
                 self.handle_thread_test(ctx.channel_id, ctx.response_url)
                     .await
